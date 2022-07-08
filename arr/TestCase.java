@@ -6,11 +6,13 @@ public class TestCase {
         for (int i = 0; i <= 5; i++) {
             myArrayList.addLast(i);
         }
-
-        // myArrayList.insert(2, 5);
-        
-        // myArrayList.addFirst(-1);
-
+        System.out.println("size:"+myArrayList.size());
+        myArrayList.insert(2, 5);
+        myArrayList.removeLast();
+        myArrayList.remove(0);
+        System.out.println("size:"+myArrayList.size());
+        myArrayList.addFirst(-1);
+        System.out.println("size:"+myArrayList.size());
         for (int i = 0; i < myArrayList.size(); i++) {
             System.out.println(myArrayList.get(i));
         }
