@@ -21,7 +21,7 @@ public class TestCase {
     }
 
     private static void testLinkedList(){
-        MyLinkedList<Integer> list=new MyLinkedList<>();
+        MyLinkedListSingleNode<Integer> list=new MyLinkedListSingleNode<>();
         list.addFirst(-1);
         list.addLast(100);
         System.out.println("size1:"+list.size());

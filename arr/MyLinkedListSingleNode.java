@@ -5,15 +5,13 @@ import java.util.NoSuchElementException;
 /**
  * 双链表节点实现双向链表
  */
-public class MyLinkedList<E> {
+public class MyLinkedListSingleNode<E> {
     /**
      * 双链表节点
      */
     private static  class Node<E>{
         E value;
         Node<E> next;
-        Node<E> pre;
-
         public Node(E val){
             this.value=val;
         }
@@ -21,127 +19,129 @@ public class MyLinkedList<E> {
 
     /* 当前双链表属性 */
     private int size;
-    final private Node<E> headNode ,tailNode;
+    final private Node<E> headNode ,tailNode;//虽不能逆向访问，但是能通过尾节点判断遍历完成了
 
-    public MyLinkedList(){
-        headNode=new Node<>(null);
-        tailNode=new Node<>(null);
+    public MyLinkedListSingleNode(){
+        headNode=new Node<E>(null);
+        tailNode=new Node<E>(null);
+
         headNode.next=tailNode;
-        tailNode.pre=headNode;
-        size = 0;
+
+        size=0;
     }
 
     /* 增 */
     public void addLast(E e){
-        Node<E> temp= tailNode.pre;
+
         Node<E> newNode=new Node<>(e);
-        newNode.pre=temp;
+
+        Node<E> temp;
+        if(size-1 >=0 ){
+            temp=getNode(size-1);
+        }else{
+            temp=headNode;
+        }
+        
         newNode.next=tailNode;
-
         temp.next=newNode;
-        tailNode.pre=newNode;
-
         size++;
-
     }
     public void addFirst(E e){
-        Node<E> temp=headNode.next;
-
+        Node<E> temp = headNode.next;
         Node<E> newNode=new Node<>(e);
-        newNode.pre=headNode;
-        newNode.next=temp;
 
-        temp.pre=newNode;
+        newNode.next=temp;
         headNode.next=newNode;
 
         size++;
 
+
     }
     public void insert(int index, E e){
         checkPosition(index);
-        if(size==index){
+
+        if(index==size){
             addLast(e);
-            return;
         }
-        Node<E> x = getNode(index);
-        Node<E> behaveNode=x.pre;
-        
-        //插入的节点更新
+
         Node<E> newNode=new Node<>(e);
-        newNode.pre=behaveNode;
-        newNode.next=x;
+        Node<E> p;
 
-        //原节点前后更新
-        behaveNode.next=newNode;
-        x.pre=newNode;
+        //通过索引获取前一个元素
+        if(index-1 >= 0){
+            p = getNode(index-1);
+        }else{
+            p=headNode;
+        }
 
+        newNode.next=p.next;
+        p.next=newNode;
+        
         size++;
 
     }
     /* 删 */
     public E removeFirst(){
-        if(size<1){
-            throw new NoSuchElementException("removeFirt size:"+size);
+        if( size < 1 ){
+            throw new NoSuchElementException();
         }
-        Node<E> firstNode=headNode.next;
-        Node<E> tempNode =firstNode.next;
-        headNode.next =tempNode;
-        tempNode.pre=headNode;
+        Node<E> temp = headNode.next;
+        headNode.next=headNode.next.next;
 
         size--;
+        temp.next=null;
 
-        E firstE=firstNode.value;
-        firstNode.next=null;
-        firstNode.pre=null;
-        firstNode=null;
-        return firstE;
+        return temp.value;
+
     }
 
     public E removeLast(){
-        if(size<1){
-            throw new NoSuchElementException("removeLast size:"+size);
+        if(isEmpty() ){
+            throw new NoSuchElementException();
         }
-        Node<E> xNode=tailNode.pre;
-        Node<E> temp=xNode.pre;
+        Node<E> p =getNode(size-1);
+        Node<E> temp ;
+        if(size-2>=0){
+            temp =getNode(size-2);
+        }else{
+            temp=headNode;
+        }
         temp.next=tailNode;
-        tailNode.pre=temp;
+        p.next=null;
 
         size--;
-
-        E e=xNode.value;
-        xNode.next=null;
-        xNode.pre=null;
-        xNode=null;
-        return e;
+        return p.value;
     }
 
     public E remove(int index){
+        checkElement(index);
+
         Node<E> p=getNode(index);
 
-        Node<E> behaveNode=p.pre;
-        Node<E> afterNode=p.next;
+        Node<E> temp;
+        if(index-1>=0){
+            temp=getNode(index-1);
+        }else{
+            temp=headNode;
+        }
 
-        behaveNode.next=afterNode;
-        afterNode.pre=behaveNode;
+        Node<E> next = p.next;
+        temp.next=next;
+        p.next=null;
 
         size--;
 
-        E oldE = p.value;
-        p.pre=null;
-        p.next=null;
+        return p.value;
 
-        return oldE;
     }
 
     /* 改 */
     public E set(int index ,E e){
         checkElement(index);
-
-        Node<E> oldNode=getNode(index);
-
-        E oldE=oldNode.value;
-        oldNode.value=e;
-  
+        Node<E> p=getNode(index);
+        
+        E oldE=p.value;
+        p.value=e;
         return oldE;
     }
 
@@ -161,7 +161,8 @@ public class MyLinkedList<E> {
         if(size<1){
             throw new NoSuchElementException("getLast size: "+size);
         }
-        return tailNode.pre.value;
+
+        return getNode(size-1).value;
     }    
 
 
